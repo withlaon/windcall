@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rowCountSpan = document.getElementById('row-count');
     const selectAllBtn = document.getElementById('select-all');
     const deselectAllBtn = document.getElementById('deselect-all');
+    const summarySection = document.getElementById('summary-section');
 
     let workbookData = null;
     let headers = [];
@@ -76,8 +77,20 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // Now read the (potentially decrypted) buffer with SheetJS
                 const workbook = XLSX.read(workbookBuffer, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // --- CUSTOM EXTRACTION LOGIC ---
+                const targetSheetName = "갑지_협력사 전체 정산 확인용";
+                let worksheet = workbook.Sheets[targetSheetName];
+                
+                if (worksheet) {
+                    extractSummaryData(worksheet);
+                } else {
+                    console.warn(`Sheet "${targetSheetName}" not found. Falling back to first sheet.`);
+                    worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    summarySection.classList.add('hidden');
+                }
+                // -------------------------------
+
                 const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                 
                 if (json.length > 0) {
@@ -92,6 +105,41 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         reader.readAsArrayBuffer(file);
+    }
+
+    /**
+     * Extracts specific cells F24, F25, G24, G25, P24, P25
+     * @param {Object} worksheet SheetJS Worksheet
+     */
+    function extractSummaryData(worksheet) {
+        const getVal = (cell) => {
+            const data = worksheet[cell];
+            if (!data) return 0;
+            return typeof data.v === 'number' ? data.v : 0;
+        };
+
+        const f24 = getVal('F24');
+        const f25 = getVal('F25');
+        const g24 = getVal('G24');
+        const g25 = getVal('G25');
+        const p24 = getVal('P24');
+        const p25 = getVal('P25');
+
+        const format = (num) => num.toLocaleString('ko-KR');
+
+        document.getElementById('val-f24').textContent = format(f24);
+        document.getElementById('val-f25').textContent = format(f25);
+        document.getElementById('total-f').textContent = format(f24 + f25);
+
+        document.getElementById('val-g24').textContent = format(g24);
+        document.getElementById('val-g25').textContent = format(g25);
+        document.getElementById('total-g').textContent = format(g24 + g25);
+
+        document.getElementById('val-p24').textContent = format(p24);
+        document.getElementById('val-p25').textContent = format(p25);
+        document.getElementById('total-p').textContent = format(p24 + p25);
+
+        summarySection.classList.remove('hidden');
     }
 
     function processData(data) {
@@ -111,6 +159,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderColumnList() {
         columnList.innerHTML = '';
+        if (!headers) return;
+
         headers.forEach(header => {
             const div = document.createElement('div');
             div.className = 'column-item';
@@ -121,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             checkbox.id = `col-${header}`;
             
             const label = document.createElement('span');
-            label.textContent = header;
+            label.textContent = header || '(Empty Header)';
             
             div.appendChild(checkbox);
             div.appendChild(label);
@@ -158,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const headerRow = document.createElement('tr');
         selectedHeaders.forEach(h => {
             const th = document.createElement('th');
-            th.textContent = h;
+            th.textContent = h || '';
             headerRow.appendChild(th);
         });
         thead.appendChild(headerRow);

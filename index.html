@@ -54,6 +54,39 @@
                 <h2>데이터 미리보기</h2>
                 <p>왼쪽에서 엑셀 파일을 업로드하면<br>여기에 데이터가 표시됩니다.</p>
             </div>
+
+            <!-- Summary Section for specific extraction -->
+            <div id="summary-section" class="summary-section hidden">
+                <div class="summary-card">
+                    <h2>📊 주요 정산 요약</h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="label">관리비</span>
+                            <div class="values">
+                                <p>24행: <span id="val-f24">-</span></p>
+                                <p>25행: <span id="val-f25">-</span></p>
+                                <p class="total">합계: <span id="total-f">-</span></p>
+                            </div>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">부가세</span>
+                            <div class="values">
+                                <p>24행: <span id="val-g24">-</span></p>
+                                <p>25행: <span id="val-g25">-</span></p>
+                                <p class="total">합계: <span id="total-g">-</span></p>
+                            </div>
+                        </div>
+                        <div class="summary-item highlight">
+                            <span class="label">정산예정금액</span>
+                            <div class="values">
+                                <p>24행: <span id="val-p24">-</span></p>
+                                <p>25행: <span id="val-p25">-</span></p>
+                                <p class="total">합계: <span id="total-p">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <div id="data-preview" class="data-preview hidden">
                 <div class="preview-header">
