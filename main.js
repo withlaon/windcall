@@ -45,51 +45,49 @@ document.addEventListener('DOMContentLoaded', () => {
         handleFiles(e.target.files);
     });
 
-    function handleFiles(files) {
+    async function handleFiles(files) {
         if (files.length === 0) return;
         const file = files[0];
         const reader = new FileReader();
 
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             const data = new Uint8Array(e.target.result);
-            let workbook;
+            let workbookBuffer = data;
             
             try {
-                // Strategy 1: Try reading without password first (standard files)
-                workbook = XLSX.read(data, { type: 'array' });
+                // Strategy 1: Try reading without password first
+                XLSX.read(data, { type: 'array' });
+                console.log('File is not encrypted or successfully read without password.');
             } catch (noPassError) {
-                console.log('Attempting decryption with password...');
+                console.log('File may be encrypted. Attempting decryption with XlsxPopulate...');
                 try {
-                    // Strategy 2: Try with the provided password (encrypted files)
-                    workbook = XLSX.read(data, { 
-                        type: 'array',
-                        password: '3674601220'
-                    });
+                    // Strategy 2: Use XlsxPopulate to decrypt (Supports Agile Encryption)
+                    const workbook = await XlsxPopulate.fromDataAsync(data, { password: '3674601220' });
+                    // Convert decrypted workbook back to buffer for SheetJS
+                    workbookBuffer = await workbook.outputAsync();
+                    console.log('Decryption successful using XlsxPopulate.');
                 } catch (passError) {
-                    console.error('Decryption failed:', passError);
-                    alert('파일을 읽는 중 오류가 발생했습니다.\n1. 암호가 맞지 않음\n2. 지원하지 않는 암호화 방식\n3. 파일 손상\n\n콘솔 로그를 확인해 주세요.');
+                    console.error('Decryption failed with XlsxPopulate:', passError);
+                    alert('파일을 읽는 중 오류가 발생했습니다.\n1. 암호가 맞지 않음 (3674601220)\n2. 지원하지 않는 파일 형식\n3. 파일 손상');
                     return;
                 }
             }
 
-            if (workbook) {
-                try {
-                    // Assume first sheet
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    
-                    // Convert to JSON
-                    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    
-                    if (json.length > 0) {
-                        processData(json);
-                    } else {
-                        alert('파일에 데이터가 없습니다.');
-                    }
-                } catch (processError) {
-                    console.error('Data processing error:', processError);
-                    alert('데이터 처리 중 오류가 발생했습니다.');
+            try {
+                // Now read the (potentially decrypted) buffer with SheetJS
+                const workbook = XLSX.read(workbookBuffer, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                if (json.length > 0) {
+                    processData(json);
+                } else {
+                    alert('파일에 데이터가 없습니다.');
                 }
+            } catch (processError) {
+                console.error('Data processing error:', processError);
+                alert('데이터 처리 중 오류가 발생했습니다.');
             }
         };
 
