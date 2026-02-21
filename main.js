@@ -52,27 +52,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         reader.onload = (e) => {
             const data = new Uint8Array(e.target.result);
+            let workbook;
+            
             try {
-                const workbook = XLSX.read(data, { 
-                    type: 'array',
-                    password: '3674601220'
-                });
-                
-                // Assume first sheet
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                
-                // Convert to JSON
-                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                
-                if (json.length > 0) {
-                    processData(json);
-                } else {
-                    alert('파일에 데이터가 없습니다.');
+                // Strategy 1: Try reading without password first (standard files)
+                workbook = XLSX.read(data, { type: 'array' });
+            } catch (noPassError) {
+                console.log('Attempting decryption with password...');
+                try {
+                    // Strategy 2: Try with the provided password (encrypted files)
+                    workbook = XLSX.read(data, { 
+                        type: 'array',
+                        password: '3674601220'
+                    });
+                } catch (passError) {
+                    console.error('Decryption failed:', passError);
+                    alert('파일을 읽는 중 오류가 발생했습니다.\n1. 암호가 맞지 않음\n2. 지원하지 않는 암호화 방식\n3. 파일 손상\n\n콘솔 로그를 확인해 주세요.');
+                    return;
                 }
-            } catch (error) {
-                console.error('Excel processing error:', error);
-                alert('파일을 읽는 중 오류가 발생했습니다. 암호가 맞지 않거나 손상된 파일일 수 있습니다.');
+            }
+
+            if (workbook) {
+                try {
+                    // Assume first sheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    
+                    // Convert to JSON
+                    const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    if (json.length > 0) {
+                        processData(json);
+                    } else {
+                        alert('파일에 데이터가 없습니다.');
+                    }
+                } catch (processError) {
+                    console.error('Data processing error:', processError);
+                    alert('데이터 처리 중 오류가 발생했습니다.');
+                }
             }
         };
 
