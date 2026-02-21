@@ -1,14 +1,43 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Lotto Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <div class="container">
+        <div class="theme-toggle-container">
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light mode">
+                <span class="icon">🌙</span>
+            </button>
+        </div>
+        <header>
+            <h1>🎰 Lucky Lotto</h1>
+            <p>오늘의 행운의 번호를 확인하세요!</p>
+        </header>
+        
+        <main>
+            <div id="ball-container" class="ball-container">
+                <div class="placeholder">?</div>
+                <div class="placeholder">?</div>
+                <div class="placeholder">?</div>
+                <div class="placeholder">?</div>
+                <div class="placeholder">?</div>
+                <div class="placeholder">?</div>
+            </div>
+            
+            <button id="generate-btn" class="generate-btn">번호 생성하기</button>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Windcall Lotto. Good Luck!</p>
+        </footer>
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
