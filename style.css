@@ -1,21 +1,12 @@
 :root {
-    /* Dark Mode (Default) */
-    --bg-color: #0a192f;
-    --card-bg: #112240;
-    --text-color: #e6f1ff;
-    --accent-color: #f1c40f;
-    --accent-hover: #d4ac0d;
-    --footer-opacity: 0.5;
-    --ball-shadow: rgba(0, 0, 0, 0.3);
-    --font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
-body.light-mode {
-    --bg-color: #f0f2f5;
-    --card-bg: #ffffff;
-    --text-color: #1a1a1a;
-    --footer-opacity: 0.7;
-    --ball-shadow: rgba(0, 0, 0, 0.1);
+    --bg-color: #f8f9fa;
+    --sidebar-bg: #ffffff;
+    --text-color: #333;
+    --accent-color: #4CAF50; /* Green for Excel */
+    --accent-hover: #45a049;
+    --border-color: #e0e0e0;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --font-family: 'Pretendard', sans-serif;
 }
 
 * {
@@ -28,163 +19,295 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--font-family);
+    height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow: hidden;
 }
 
-.container {
-    background-color: var(--card-bg);
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    text-align: center;
+.app-container {
+    display: flex;
     width: 100%;
-    max-width: 600px;
-    position: relative;
+    height: 100%;
 }
 
-.theme-toggle-container {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
-.theme-toggle-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
+/* Sidebar */
+.sidebar {
+    width: 350px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+    z-index: 10;
+    overflow-y: auto;
 }
 
-.theme-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
+.sidebar header {
+    margin-bottom: 30px;
+    text-align: center;
 }
 
-body.light-mode .theme-toggle-btn {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-body.light-mode .theme-toggle-btn:hover {
-    background: rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-    font-size: 2.5rem;
+.sidebar h1 {
+    font-size: 1.5rem;
     color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.sidebar p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.upload-area:hover, .upload-area.dragover {
+    border-color: var(--accent-color);
+    background-color: #e8f5e9;
+}
+
+.upload-icon {
+    font-size: 3rem;
     margin-bottom: 10px;
 }
 
-header p {
-    font-size: 1.1rem;
-    opacity: 0.8;
-    margin-bottom: 40px;
-}
-
-.ball-container {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 40px;
-    min-height: 80px;
-}
-
-.lotto-ball, .placeholder {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #fff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.placeholder {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 2px dashed rgba(255, 255, 255, 0.2);
-    color: rgba(255, 255, 255, 0.2);
-}
-
-.lotto-ball.pop {
-    animation: popIn 0.5s ease-out forwards;
-}
-
-@keyframes popIn {
-    0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-    70% { transform: scale(1.1) rotate(10deg); }
-    100% { transform: scale(1) rotate(0); opacity: 1; }
-}
-
-/* Lotto Ball Colors based on number ranges */
-.ball-1 { background: radial-gradient(circle at 30% 30%, #f1c40f, #d4ac0d); color: #333; } /* 1-10: Yellow */
-.ball-2 { background: radial-gradient(circle at 30% 30%, #3498db, #2980b9); } /* 11-20: Blue */
-.ball-3 { background: radial-gradient(circle at 30% 30%, #e74c3c, #c0392b); } /* 21-30: Red */
-.ball-4 { background: radial-gradient(circle at 30% 30%, #95a5a6, #7f8c8d); } /* 31-40: Gray */
-.ball-5 { background: radial-gradient(circle at 30% 30%, #2ecc71, #27ae60); } /* 41-45: Green */
-
-.generate-btn {
-    background-color: var(--accent-color);
-    color: #000;
-    border: none;
-    padding: 15px 40px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
-}
-
-.generate-btn:hover {
-    background-color: var(--accent-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(241, 196, 15, 0.4);
-}
-
-.generate-btn:active {
-    transform: translateY(0);
-}
-
-.generate-btn:disabled {
-    background-color: #555;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-footer {
-    margin-top: 40px;
+.upload-area p {
+    margin-bottom: 15px;
     font-size: 0.9rem;
+    color: #555;
+}
+
+/* Column Selector */
+.column-selector {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.column-selector h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.column-selector .actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.column-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    padding: 10px;
+    max-height: 300px;
+}
+
+.column-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #f5f5f5;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.column-item:last-child {
+    border-bottom: none;
+}
+
+.column-item:hover {
+    background-color: #f0f0f0;
+}
+
+.column-item input {
+    margin-right: 10px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.column-item span {
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Main Content */
+.preview-area {
+    flex-grow: 1;
+    background-color: var(--bg-color);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #888;
+    text-align: center;
+}
+
+.empty-state .icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
     opacity: 0.5;
 }
 
-@media (max-width: 480px) {
-    .container {
-        padding: 20px;
+.data-preview {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.preview-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-header h2 {
+    font-size: 1.2rem;
+    color: #444;
+}
+
+.preview-header span {
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: normal;
+}
+
+.table-container {
+    flex-grow: 1;
+    overflow: auto;
+    padding: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+}
+
+th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    font-weight: 600;
+    color: #555;
+    z-index: 1;
+    border-bottom: 2px solid #ddd;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: white;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(76, 175, 80, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 10px rgba(76, 175, 80, 0.3);
+}
+
+.btn-secondary {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    color: #555;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+.btn-secondary:hover {
+    background-color: #f0f0f0;
+    border-color: #bbb;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-sm:hover {
+    background: #e0e0e0;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+        overflow-y: auto;
     }
     
-    header h1 {
-        font-size: 2rem;
+    .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #eee;
     }
     
-    .lotto-ball, .placeholder {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
+    .preview-area {
+        height: 500px; /* Min height for mobile preview */
     }
 }

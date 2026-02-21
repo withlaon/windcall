@@ -3,41 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Lotto Generator</title>
+    <title>엑셀 데이터 추출기 | Excel Data Extractor</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS (Community Edition) -->
+    <script lang="javascript" src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="theme-toggle-container">
-            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark/light mode">
-                <span class="icon">🌙</span>
-            </button>
-        </div>
-        <header>
-            <h1>🎰 Lucky Lotto</h1>
-            <p>오늘의 행운의 번호를 확인하세요!</p>
-        </header>
-        
-        <main>
-            <div id="ball-container" class="ball-container">
-                <div class="placeholder">?</div>
-                <div class="placeholder">?</div>
-                <div class="placeholder">?</div>
-                <div class="placeholder">?</div>
-                <div class="placeholder">?</div>
-                <div class="placeholder">?</div>
+    <div class="app-container">
+        <!-- Sidebar / Controls -->
+        <aside class="sidebar">
+            <header>
+                <h1>📊 Excel Extractor</h1>
+                <p>필요한 데이터만 쏙 뽑아내세요.</p>
+            </header>
+
+            <div class="upload-area" id="drop-zone">
+                <input type="file" id="file-input" accept=".xlsx, .xls, .csv" hidden>
+                <div class="upload-icon">📁</div>
+                <p>파일을 여기에 끌어놓거나<br>클릭하여 선택하세요</p>
+                <button class="btn btn-secondary" onclick="document.getElementById('file-input').click()">파일 선택</button>
+            </div>
+
+            <div id="column-selector" class="column-selector hidden">
+                <h3>열 선택 (Columns)</h3>
+                <div class="actions">
+                    <button id="select-all" class="btn-sm">전체 선택</button>
+                    <button id="deselect-all" class="btn-sm">전체 해제</button>
+                </div>
+                <div id="column-list" class="column-list">
+                    <!-- Columns will be populated here -->
+                </div>
+            </div>
+
+            <div class="export-section hidden" id="export-section">
+                <button id="export-btn" class="btn btn-primary">
+                    💾 엑셀 파일로 저장하기
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content / Preview -->
+        <main class="preview-area">
+            <div id="empty-state" class="empty-state">
+                <div class="icon">👀</div>
+                <h2>데이터 미리보기</h2>
+                <p>왼쪽에서 엑셀 파일을 업로드하면<br>여기에 데이터가 표시됩니다.</p>
             </div>
             
-            <button id="generate-btn" class="generate-btn">번호 생성하기</button>
+            <div id="data-preview" class="data-preview hidden">
+                <div class="preview-header">
+                    <h2>데이터 미리보기 <span id="row-count">(0 행)</span></h2>
+                </div>
+                <div class="table-container">
+                    <table id="preview-table">
+                        <!-- Table Data -->
+                    </table>
+                </div>
+            </div>
         </main>
-
-        <footer>
-            <p>&copy; 2026 Windcall Lotto. Good Luck!</p>
-        </footer>
     </div>
     <script src="main.js"></script>
 </body>
 </html>
+
+2
