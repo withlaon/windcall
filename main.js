@@ -85,20 +85,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 // --- CUSTOM EXTRACTION LOGIC ---
                 const targetSheetName = "갑지_협력사 전체 정산 확인용";
                 let worksheet = workbook.Sheets[targetSheetName];
+                let jsonData;
                 
                 if (worksheet) {
-                    extractSummaryData(worksheet);
+                    // 1. Extract and update the summary card
+                    const summary = extractSummaryData(worksheet);
+                    
+                    // 2. Create a specialized "Result Table" for the preview area
+                    jsonData = [
+                        ["항목 (Row)", "관리비 (F)", "부가세 (G)", "정산예정금액 (P)"],
+                        ["24행 데이터", summary.f24, summary.g24, summary.p24],
+                        ["25행 데이터", summary.f25, summary.g25, summary.p25],
+                        ["전체 합계", summary.f24 + summary.f25, summary.g24 + summary.g25, summary.p24 + summary.p25]
+                    ];
+                    
+                    console.log('Specialized result table generated.');
                 } else {
-                    console.warn(`Sheet "${targetSheetName}" not found. Falling back to first sheet.`);
+                    console.warn(`Sheet "${targetSheetName}" not found. Falling back to raw data preview.`);
                     worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     summarySection.classList.add('hidden');
+                    jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                 }
                 // -------------------------------
-
-                const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                 
-                if (json.length > 0) {
-                    processData(json);
+                if (jsonData && jsonData.length > 0) {
+                    processData(jsonData);
                 } else {
                     alert('파일에 데이터가 없습니다.');
                 }
@@ -116,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     /**
      * Extracts specific cells F24, F25, G24, G25, P24, P25
      * @param {Object} worksheet SheetJS Worksheet
+     * @returns {Object} Extracted numeric values
      */
     function extractSummaryData(worksheet) {
         const getVal = (cell) => {
@@ -124,28 +136,31 @@ document.addEventListener('DOMContentLoaded', () => {
             return typeof data.v === 'number' ? data.v : 0;
         };
 
-        const f24 = getVal('F24');
-        const f25 = getVal('F25');
-        const g24 = getVal('G24');
-        const g25 = getVal('G25');
-        const p24 = getVal('P24');
-        const p25 = getVal('P25');
+        const vals = {
+            f24: getVal('F24'),
+            f25: getVal('F25'),
+            g24: getVal('G24'),
+            g25: getVal('G25'),
+            p24: getVal('P24'),
+            p25: getVal('P25')
+        };
 
         const format = (num) => num.toLocaleString('ko-KR');
 
-        document.getElementById('val-f24').textContent = format(f24);
-        document.getElementById('val-f25').textContent = format(f25);
-        document.getElementById('total-f').textContent = format(f24 + f25);
+        document.getElementById('val-f24').textContent = format(vals.f24);
+        document.getElementById('val-f25').textContent = format(vals.f25);
+        document.getElementById('total-f').textContent = format(vals.f24 + vals.f25);
 
-        document.getElementById('val-g24').textContent = format(g24);
-        document.getElementById('val-g25').textContent = format(g25);
-        document.getElementById('total-g').textContent = format(g24 + g25);
+        document.getElementById('val-g24').textContent = format(vals.g24);
+        document.getElementById('val-g25').textContent = format(vals.g25);
+        document.getElementById('total-g').textContent = format(vals.g24 + vals.g25);
 
-        document.getElementById('val-p24').textContent = format(p24);
-        document.getElementById('val-p25').textContent = format(p25);
-        document.getElementById('total-p').textContent = format(p24 + p25);
+        document.getElementById('val-p24').textContent = format(vals.p24);
+        document.getElementById('val-p25').textContent = format(vals.p25);
+        document.getElementById('total-p').textContent = format(vals.p24 + vals.p25);
 
         summarySection.classList.remove('hidden');
+        return vals;
     }
 
     function processData(data) {
